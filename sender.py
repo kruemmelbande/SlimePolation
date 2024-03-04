@@ -7,7 +7,7 @@ async def main():
         udp_handler.heartbeat(),
         udp_handler.handshake(1, 1, 1),
         udp_handler.add_imu(1),
-        udp_handler.rotate_imu(0, (10, 20, 30))
+        udp_handler.rotate_imu(0, (10, 20, 30, 40))
     )
 
 asyncio.run(main())
