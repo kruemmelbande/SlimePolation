@@ -9,50 +9,47 @@ class packetbuilder:
 
     @property
     def heartbeat_packet(self):
-        packet = bytearray()
-        packet.extend(struct.pack('i', 0))  # putInt(0)
-        return packet
-    
-    def build_handshake_packet(self, imu_type, board_type, mcu_type):
-        packet = bytearray()
-        packet.extend(struct.pack('i', 3))                                # packet 3 header
-        packet.extend(struct.pack('q', self.packet_id))                  # packet counter
-        packet.extend(struct.pack('i', board_type))                # Board type
-        packet.extend(struct.pack('i', imu_type))                  # IMU type
-        packet.extend(struct.pack('i', mcu_type))                  # MCU type
-        packet.extend(struct.pack('iii', 0, 0, 0))                       # IMU info (unused)
-        packet.extend(struct.pack('i', self.firmware_build))             # Firmware build
-        fw_string_bytes = self.fw_string.encode('utf-8')
-        packet.append(len(fw_string_bytes))                              # Length of fw string
-        packet.extend(fw_string_bytes)                                   # fw string
-        packet.extend(bytes([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]))       # MAC address
-        return packet
-    
-    def build_imu_packet(self, imu_id, imu_type):
-        self.packet_id += 1  # Increment packet counter
+        heartbeat_packet = bytearray(28)
+        struct.pack_into('>i', heartbeat_packet, 0, 0)
+        return heartbeat_packet
 
-        packet = bytearray()
-        packet.extend(struct.pack('i', 17))                                 # packet 17 header
-        packet.extend(struct.pack('q', self.packet_id))                     # packet counter
-        packet.append(imu_id.to_bytes(1, byteorder='little')[0])            # tracker id (shown as IMU Tracker #x in SlimeVR)
-        packet.append(int(1).to_bytes(1, byteorder='little')[0])            # data type
-        packet.extend(struct.pack('ffff', imu_type[0], imu_type[1], imu_type[2], imu_type[3]))  # Quaternion values
-        packet.append(int(0).to_bytes(1, byteorder='little')[0])            # Calibration info
+    def build_handshake_packet(self, imu_type, board_type, mcu_type):
+        packet = bytearray(128)
+        packet[0:4] = struct.pack('i', 3)  # packet 3 header
+        packet[4:12] = struct.pack('q', self.packet_id)  # packet counter
+        packet[12:16] = struct.pack('i', board_type)  # Board type
+        packet[16:20] = struct.pack('i', imu_type)  # IMU type
+        packet[20:24] = struct.pack('i', mcu_type)  # MCU type
+        packet[24:36] = struct.pack('3i', *[0]*3)  # IMU info (unused)
+        packet[36:40] = struct.pack('i', self.firmware_build)  # Firmware build
+        fw_string_bytes = self.fw_string.encode('utf-8')
+        fw_string_length = len(fw_string_bytes).to_bytes(1, byteorder='big')  # Length of fw string
+        packet[40:41] = fw_string_length
+        packet[41:41+len(fw_string_bytes)] = fw_string_bytes  # fw string
+        packet[41+len(fw_string_bytes):47+len(fw_string_bytes)] = bytes([0x01, 0x02, 0x03, 0x04, 0x05, 0x06])  # MAC address
+        return packet
+
+
+    
+    def build_imu_packet(self, imu_type):
+        packet = bytearray(128)
+        packet[0:4] = struct.pack('i', 15)               # packet 15 header
+        packet[4:12] = struct.pack('q', self.packet_id) # packet counter
+        packet[12] = self.imu_id          # tracker id (shown as IMU Tracker #x in SlimeVR)
+        packet[13] = 0                                   # sensor status
+        packet[14] = imu_type                    # imu type
+        self.packet_id+=1
+        self.imu_id+=1
         return packet
 
 
     def build_rotation_packet(self, imu_id, rotation):
-        packet = bytearray()
-        packet.extend(struct.pack('i', 17))                                 # packet 17 header
-        packet.extend(struct.pack('q', self.packet_id)) # packet counter
-        self.packet_id+=1
-        #packet.append(imu_id.to_bytes(1, byteorder='little'))               # 
-        packet.extend(struct.pack('i', self.imu_id))                                 # 
-        #tracker id (shown as IMU Tracker #x in SlimeVR)
-        #packet.append(int(1).to_bytes(1, byteorder='little'))               # 
-        packet.extend(struct.pack('i', 1))                                 # 
-        
-        #data type
-        packet.extend(struct.pack('ffff', rotation[0], rotation[1], rotation[2], rotation[3]))  # Quaternion values
-        packet.extend(struct.pack('i', 0))               # Calibration info
+        packet = bytearray(128)
+        struct.pack_into('i', packet, 0, 17)  # Packet 17 header
+        struct.pack_into('q', packet, 4, self.packet_id)  # Packet counter
+        packet[12] = imu_id & 0xFF  # Tracker id (shown as IMU Tracker #x in SlimeVR)
+        packet[13] = 1  # Data type
+        struct.pack_into('ffff', packet, 14, rotation.x, rotation.y, rotation.z, rotation.w)  # Quaternion x, y, z, w
+        packet[30] = 0  # Calibration info
+        self.packet_id += 1
         return packet

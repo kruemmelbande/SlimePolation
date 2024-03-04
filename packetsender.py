@@ -13,7 +13,7 @@ class UDPHandler:
         self.socket.bind(("0.0.0.0", 21201))
 
         self.slimevr_port = 6969
-        self.broadcast_ip = "localhost"
+        self.broadcast_ip = "127.0.0.1"
         self.slimevr_ip = self.broadcast_ip
         #self.slimevr_ip = "127.0.0.1"
         #self.slimevr_ip = "127.0.0.1"
@@ -27,17 +27,14 @@ class UDPHandler:
     async def handshake(self, imu_type, board_type, mcu_type):
         print("Send handshake packet..")
         #self.slimevr_ip = self.broadcast_ip
-        self.slimevr_ip = "127.0.0.1"
-        self.broadcast_ip = "127.0.0.1"
         result = ""
         while result == "":
             await self.send_packet(self.packet_builder.build_handshake_packet(imu_type, board_type, mcu_type))
             print("Sent packet to server...")
-            #result = await self.listen_for_handshake()
+            result = await self.listen_for_handshake()
             print("Waiting for server")
             await asyncio.sleep(0.5)
-            result= "127.0.0.1"
-            self.broadcast_ip="255.255.255.255"
+
         print("Server found")
         print("possibly...")
         
@@ -47,14 +44,21 @@ class UDPHandler:
         print("Send add imu packet")
         # if self.slimevr_ip == self.broadcast_ip:
         #     return "Server not found"
-        await self.send_packet(self.packet_builder.build_imu_packet(1,[0,0,0,0]))
+        await self.send_packet(self.packet_builder.build_imu_packet(1))
         return "Added IMU"
 
     async def rotate_imu(self, imu_id, rotation):
+        class Quaternion:
+            def __init__(self, x, y, z, w):
+                self.x = x
+                self.y = y
+                self.z = z
+                self.w = w
+        rot=Quaternion(rotation[0],rotation[2],rotation[3],1)
         print("Send rotation packet")
         # if self.slimevr_ip == self.broadcast_ip:
         #     return "Server not found"
-        await self.send_packet(self.packet_builder.build_rotation_packet(imu_id, rotation))
+        await self.send_packet(self.packet_builder.build_rotation_packet(imu_id, rot))
         return f"Rotated IMU {imu_id}"
 
     async def send_packet(self, packet):
@@ -65,7 +69,9 @@ class UDPHandler:
     async def listen_for_handshake(self):
         now=time.time()
         while time.time()-now < 30:
+            
             received, addr = self.socket.recvfrom(1024)
+            print("a")
             received_message = received.decode('utf-8', 'ignore')
             print(received_message)
             if "Hey OVR =D 5" in received_message:
