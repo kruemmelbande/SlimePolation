@@ -15,13 +15,13 @@ class packetbuilder:
 
     def build_handshake_packet(self, imu_type, board_type, mcu_type):
         packet = bytearray(128)
-        packet[0:4] = struct.pack('i', 3)  # packet 3 header
-        packet[4:12] = struct.pack('q', self.packet_id)  # packet counter
-        packet[12:16] = struct.pack('i', board_type)  # Board type
-        packet[16:20] = struct.pack('i', imu_type)  # IMU type
-        packet[20:24] = struct.pack('i', mcu_type)  # MCU type
-        packet[24:36] = struct.pack('3i', *[0]*3)  # IMU info (unused)
-        packet[36:40] = struct.pack('i', self.firmware_build)  # Firmware build
+        packet[0:4] = struct.pack('>i', 3)  # packet 3 header
+        packet[4:12] = struct.pack('>q', self.packet_id)  # packet counter
+        packet[12:16] = struct.pack('>i', board_type)  # Board type
+        packet[16:20] = struct.pack('>i', imu_type)  # IMU type
+        packet[20:24] = struct.pack('>i', mcu_type)  # MCU type
+        packet[24:36] = struct.pack('>3i', *[0]*3)  # IMU info (unused)
+        packet[36:40] = struct.pack('>i', self.firmware_build)  # Firmware build
         fw_string_bytes = self.fw_string.encode('utf-8')
         fw_string_length = len(fw_string_bytes).to_bytes(1, byteorder='big')  # Length of fw string
         packet[40:41] = fw_string_length
