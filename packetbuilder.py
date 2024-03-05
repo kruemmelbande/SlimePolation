@@ -33,11 +33,11 @@ class packetbuilder:
     
     def build_imu_packet(self, imu_type):
         packet = bytearray(128)
-        packet[0:4] = struct.pack('i', 15)               # packet 15 header
-        packet[4:12] = struct.pack('q', self.packet_id) # packet counter
-        packet[12] = self.imu_id          # tracker id (shown as IMU Tracker #x in SlimeVR)
-        packet[13] = 0                                   # sensor status
-        packet[14] = imu_type                    # imu type
+        packet[0:4] = struct.pack('>i', 15)               # packet 15 header
+        packet[4:12] = struct.pack('>q', self.packet_id) # packet counter
+        packet[12] = self.imu_id         # tracker id (shown as IMU Tracker #x in SlimeVR)
+        packet[13] = 0                                  # sensor status
+        packet[14] = imu_type                 # imu type
         self.packet_id+=1
         self.imu_id+=1
         return packet
@@ -45,11 +45,11 @@ class packetbuilder:
 
     def build_rotation_packet(self, imu_id, rotation):
         packet = bytearray(128)
-        struct.pack_into('i', packet, 0, 17)  # Packet 17 header
-        struct.pack_into('q', packet, 4, self.packet_id)  # Packet counter
+        struct.pack_into('>i', packet, 0, 17)  # Packet 17 header
+        struct.pack_into('>q', packet, 4, self.packet_id)  # Packet counter
         packet[12] = imu_id & 0xFF  # Tracker id (shown as IMU Tracker #x in SlimeVR)
         packet[13] = 1  # Data type
-        struct.pack_into('ffff', packet, 14, rotation.x, rotation.y, rotation.z, rotation.w)  # Quaternion x, y, z, w
+        struct.pack_into('>ffff', packet, 14, rotation.x, rotation.y, rotation.z, rotation.w)  # Quaternion x, y, z, w
         packet[30] = 0  # Calibration info
         self.packet_id += 1
         return packet
