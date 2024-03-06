@@ -8,20 +8,23 @@ Mainly doing this as a learning exercise. Im not expecting amazing results, but 
 Maybe this could be helpful to you to see an example implementation of some of the smlimevr protocols in python.
 
 ## Todo  
-- [ ] Send data to Slimevr Server
+- [x] Send data to Slimevr Server
     - [x] Send handshake
     - [x] Send heartbeat
     - [x] Send actual imu data
-    - [ ] Send multiple imus
+    - [x] Send multiple imus
 - [ ] Read data from the Slimevr Server
+    - [ ] Decide on a standart (osc, vmc, solarxr)
+    - [ ] Implement that
 - [ ] Make an ai
 - [ ] Train that ai
-- [ ] Make it, so i dont have to restart the slimevr server every time
+- [x] Make it, so i dont have to restart the slimevr server every time
+    - i dont know why it did that, i dont know why it doesnt do that anymore, but it works so im not complaining
 - [ ] Make a nice gui
 - [ ] ????
 - [ ] Profit
 
-# Resources that helped me
+## Resources that helped me
 - [Slimevr Sender Example](https://github.com/SlimeVR/SlimeVR-Sender-Example/)
 - The amazing people at the slimevr discord
 - Caffeine
