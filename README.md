@@ -26,6 +26,19 @@ Maybe this could be helpful to you to see an example implementation of some of t
 - [ ] Profit
 
 *the ai is currently very dumb, and does not come close to being usable.
+
+## How to use
+
+1. dont
+2. if you really want to try this anyway, start out by running recordtrackingdata.py.
+    - recordtrackingdata.py reads your motions from vrchat osc
+    - make sure that osc is enabled in the slimevr server
+    - after its done you will see captured_data.json
+    - yes, there are errors here, ignore them
+3. now its time to train the ai. For this simply run trainai.py
+4. now run SlimePolation.py
+5. time to regret running SlimePolation.py, because the results are currently pretty bad
+
 ## Resources that helped me
 - [Slimevr Sender Example](https://github.com/SlimeVR/SlimeVR-Sender-Example/)
 - The amazing people at the slimevr discord
