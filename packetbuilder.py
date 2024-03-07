@@ -12,6 +12,11 @@ class packetbuilder:
         heartbeat_packet = bytearray(28)
         struct.pack_into('>i', heartbeat_packet, 0, 0)
         return heartbeat_packet
+    
+    def reset_packet(self):
+        packet = bytearray(28)
+        packet[0:4] = struct.pack('>i', 21)  # packet 3 header
+        return packet
 
     def build_handshake_packet(self, imu_type, board_type, mcu_type):
         packet = bytearray(128)

@@ -27,11 +27,17 @@ class sender:
                 self.z = cos_half_x * cos_half_y * sin_half_z - sin_half_x * sin_half_y * cos_half_z
                 self.w = cos_half_x * cos_half_y * cos_half_z + sin_half_x * sin_half_y * sin_half_z
         self.Quaternion=Quaternion
-
+    
     async def create_imu(self, imu_id):
         imu_task = asyncio.create_task(self.udp_handler.add_imu(imu_id))
         await imu_task
 
+    async def send_reset(self):
+        await self.udp_handler.reset()
+    
+    def get_slimevr_ip(self):
+        return self.udp_handler.slimevr_ip
+        
     async def set_rotation(self, imu_id, x, y, z):
         await self.udp_handler.rotate_imu(imu_id, self.Quaternion(x, y, z))
     

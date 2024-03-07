@@ -25,6 +25,9 @@ class UDPHandler:
                 #print("Currently not connected to the slimevr server.")
             await asyncio.sleep(0.8)  # At least 1 time per second (<1000ms)
 
+    async def reset(self):
+        self.send_packet(self.packet_builder.reset_packet())
+
     def send_packet(self, packet):
         #print("Sending packet:", packet)  # Debug print
         #print("Destination:", self.slimevr_ip,self.slimevr_port)
