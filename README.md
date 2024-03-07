@@ -14,16 +14,18 @@ Maybe this could be helpful to you to see an example implementation of some of t
     - [x] Send actual imu data
     - [x] Send multiple imus
 - [ ] Read data from the Slimevr Server
-    - [ ] Decide on a standart (osc, vmc, solarxr)
+    - [x] Make a prototype implementation using osc
+    - [ ] Decide on a proper standart (osc, vmc, solarxr)
     - [ ] Implement that
-- [ ] Make an ai
-- [ ] Train that ai
+- [x] Make an ai*
+- [x] Train that ai*
 - [x] Make it, so i dont have to restart the slimevr server every time
     - i dont know why it did that, i dont know why it doesnt do that anymore, but it works so im not complaining
 - [ ] Make a nice gui
 - [ ] ????
 - [ ] Profit
 
+*the ai is currently very dumb, and does not come close to being usable.
 ## Resources that helped me
 - [Slimevr Sender Example](https://github.com/SlimeVR/SlimeVR-Sender-Example/)
 - The amazing people at the slimevr discord
